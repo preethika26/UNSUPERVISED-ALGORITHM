@@ -50,26 +50,28 @@ count(credit_clust,credit_cut)
 #######################################################################################################################
 
 ##BULIDIND K MEAN CLUSTERING MODEL
+
+library(cluster)
+library(factoextra)
+
 ##elbow plot
-library(purrr)
+wssplot <- function(credit, nc=10, seed=1234){
+  wss <- (nrow(credit)-1)*sum(apply(credit,2,var))
+  for (i in 1:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(credit, centers=i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters",
+       ylab="Within groups sum of squares")}
 
-tot_withinss<-map_dbl(1:20,function(k){
-  model=kmeans(x=credit_scaled,centers=k)
-  model$tot.withinss
-})
-elbow_credit<-data.frame(
-  k=1:20,
-  tot_withinss<-tot_withinss
-)
-
-elbow_credit
-
-library(ggplot2)
-ggplot(elbow_credit,aes(x=k,y=tot_withinss))+geom_line()+scale_x_continuous(breaks=1:20)
-#There are 14 clusters in K mean 
+wssplot(credit, nc=6) 
 
 ##fit the model
-credit_final_model<-kmeans(credit_scaled,centers=7)
-credit_final_model
+k5<-kmeans(credit,centers=7,iter.max = 10, nstart = 1)
+
+##ploting the cluster
+fviz_cluster(k5, geom = "point",  data = credit) + ggtitle("k = 5")
+
+##generate the segmented the credit data frame
+data=cbind(credit,cluster=k5$cluster)
 
 #######################################################################################################################
