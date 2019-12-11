@@ -63,15 +63,17 @@ wssplot <- function(credit, nc=10, seed=1234){
   plot(1:nc, wss, type="b", xlab="Number of Clusters",
        ylab="Within groups sum of squares")}
 
-wssplot(credit, nc=6) 
+wssplot(credit, nc=10) 
 
 ##fit the model
 k5<-kmeans(credit,centers=7,iter.max = 10, nstart = 1)
 
 ##ploting the cluster
-fviz_cluster(k5, geom = "point",  data = credit) + ggtitle("k = 5")
+fviz_cluster(k5, geom = "point",  data = credit) + ggtitle("k = 7")
 
 ##generate the segmented the credit data frame
 data=cbind(credit,cluster=k5$cluster)
+
+write.csv(data,"CC.csv")
 
 #######################################################################################################################
